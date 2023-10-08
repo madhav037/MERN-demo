@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 function CreateListing() {
   const [file, setFile] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     imageUrls: [],
     name: "",
@@ -147,9 +147,9 @@ function CreateListing() {
       setLoading(false);
       if (data.success === "false") {
         setError(data.message);
-        return
+        return;
       }
-      navigate(`/listing/${data._id}`)
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -284,26 +284,30 @@ function CreateListing() {
               />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
-                <span className="text-xs">($ / month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-xs">($ / month)</span>
+                )}
               </div>
             </div>
             {formData.offer && (
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                id="discountPrice"
-                min="0"
-                max="10000000"
-                required
-                className="p-3 border border-gray-300 rounded-lg"
-                onChange={handleChange}
-                value={formData.discountPrice}
-              />
-              <div className="flex flex-col items-center">
-                <p>Discounted Price</p>
-                <span className="text-xs">($ / month)</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  id="discountPrice"
+                  min="0"
+                  max="10000000"
+                  required
+                  className="p-3 border border-gray-300 rounded-lg"
+                  onChange={handleChange}
+                  value={formData.discountPrice}
+                />
+                <div className="flex flex-col items-center">
+                  <p>Discounted Price</p>
+                  {formData.type === "rent" && (
+                    <span className="text-xs">($ / month)</span>
+                  )}
+                </div>
               </div>
-            </div>
             )}
           </div>
         </div>
