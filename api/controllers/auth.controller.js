@@ -61,7 +61,7 @@ export const google = async (req, res, next) => {
         password: hashedPassword,
         avatar: req.body.photo,
       });
-      await newUser.save(); 
+      await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = user._doc;
       res
@@ -74,11 +74,11 @@ export const google = async (req, res, next) => {
   }
 };
 
-export const signOut = async(req,res,next) => {
+export const signOut = async (req, res, next) => {
   try {
-    res.clearCookie('access_token')
-    res.status(200).json('user Logged out')
+    res.clearCookie("access_token");
+    res.status(200).json("user Logged out");
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};

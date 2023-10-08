@@ -16,14 +16,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    avatar : {
-      type : String,
-      default : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHXi6kWCo1P3qJAuOnEAs6jWS1Dg1BqRkk8Q&usqp=CAU'
-    }
+    avatar: {
+      type: String,
+      default:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHXi6kWCo1P3qJAuOnEAs6jWS1Dg1BqRkk8Q&usqp=CAU",
+    },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model('User',userSchema)
+const User = mongoose.model("User", userSchema);
 
 export default User;

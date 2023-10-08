@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 function UpdateListing() {
   const [file, setFile] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     imageUrls: [],
     name: "",
@@ -32,23 +32,23 @@ function UpdateListing() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   console.log(formData);
-  const params = useParams()
+  const params = useParams();
 
   useEffect(() => {
     const fetchListing = async () => {
-        const listingId = params.listingId
-        // console.log(listingId)
-        const res = await fetch(`/api/listing/get/${listingId}`)
-        const data = await res.json()
-        if (data.success === false) {
-            console.log(data.message)
-            return
-        }
-        setFormData(data)
-    }
+      const listingId = params.listingId;
+      // console.log(listingId)
+      const res = await fetch(`/api/listing/get/${listingId}`);
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setFormData(data);
+    };
 
-    fetchListing()
-  }, [])
+    fetchListing();
+  }, []);
 
   const handleImageSubmit = (e) => {
     if (file.length > 0 && file.length + formData.imageUrls.length < 7) {
@@ -164,9 +164,9 @@ function UpdateListing() {
       setLoading(false);
       if (data.success === "false") {
         setError(data.message);
-        return
+        return;
       }
-      navigate(`/listing/${data._id}`)
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -301,30 +301,30 @@ function UpdateListing() {
               />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
-                {formData.type === 'rent' && (
-                  <span className='text-xs'>($ / month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-xs">($ / month)</span>
                 )}
               </div>
             </div>
             {formData.offer && (
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                id="discountPrice"
-                min="0"
-                max="10000000"
-                required
-                className="p-3 border border-gray-300 rounded-lg"
-                onChange={handleChange}
-                value={formData.discountPrice}
-              />
-              <div className="flex flex-col items-center">
-                <p>Discounted Price</p>
-                {formData.type === 'rent' && (
-                    <span className='text-xs'>($ / month)</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  id="discountPrice"
+                  min="0"
+                  max="10000000"
+                  required
+                  className="p-3 border border-gray-300 rounded-lg"
+                  onChange={handleChange}
+                  value={formData.discountPrice}
+                />
+                <div className="flex flex-col items-center">
+                  <p>Discounted Price</p>
+                  {formData.type === "rent" && (
+                    <span className="text-xs">($ / month)</span>
                   )}
+                </div>
               </div>
-            </div>
             )}
           </div>
         </div>

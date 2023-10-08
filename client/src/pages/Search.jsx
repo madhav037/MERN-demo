@@ -127,6 +127,7 @@ const onShowMoreClick = async () => {
     }else{
         setShowMore(false)
     }
+    setLoading(false)
     setListings([...listings, ...data])
 }
 
