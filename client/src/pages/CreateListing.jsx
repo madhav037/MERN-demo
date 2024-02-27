@@ -24,6 +24,8 @@ function CreateListing() {
     regularPrice: 50,
     discountPrice: 0,
     offer: false,
+    lease: false,
+    leasePeriod: 1,
     parking: false,
     furnished: false,
   });
@@ -120,6 +122,12 @@ function CreateListing() {
       setFormData({
         ...formData,
         [e.target.id]: e.target.value, //here if no bracket then "name" : "skcnsd" but we dont want that so with bracket its like name: "ajcnd"
+      });
+    }
+    if (e.target.id === "lease") {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.checked,
       });
     }
   };
@@ -243,6 +251,16 @@ function CreateListing() {
               />
               <span>Offer</span>
             </div>
+            {formData.type === "rent" && <div className="flex gap-2">
+              <input
+                type="checkbox"
+                className="w-5"
+                id="lease"
+                onChange={handleChange}
+                checked={formData.lease}
+              />
+              <span>lease</span>
+            </div>}
           </div>
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
@@ -308,6 +326,24 @@ function CreateListing() {
                   )}
                 </div>
               </div>
+            )}
+            {formData.type === "rent" && formData.lease && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  id="leasePeriod"
+                  min="1"
+                  max="5"
+                  required
+                  className="p-3 border border-gray-300 rounded-lg"
+                  onChange={handleChange}
+                  value={formData.leasePeriod}
+                />
+                <div className="flex flex-col items-center">
+                  <p>Lease</p>
+                  <span className="text-xs">(year/s)</span>
+                </div>
+              </div>      
             )}
           </div>
         </div>

@@ -15,6 +15,7 @@ export default function Search() {
     offer: false,
     sort: "created_at",
     order: "desc",
+    lease: false,
   });
 
   console.log(sideBarData);
@@ -44,6 +45,12 @@ export default function Search() {
           e.target.checked || e.target.checked === "true" ? true : false,
       });
     }
+    if (e.target.id === "lease") {
+      setSideBarData({
+        ...sideBarData,
+        [e.target.id]: e.target.checked || e.target.checked === "true" ? true : false,
+      });
+    }
 
     if (e.target.id === "sort_order") {
       const sort = e.target.value.split("_")[0] || "created_at";
@@ -64,6 +71,7 @@ export default function Search() {
     urlParams.set("offer", sideBarData.offer);
     urlParams.set("sort", sideBarData.sort);
     urlParams.set("order", sideBarData.order);
+    urlParams.set("lease", sideBarData.lease);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
@@ -77,6 +85,7 @@ export default function Search() {
     const offerFromUrl = urlParams.get("offer");
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
+    const leaseFromUrl = urlParams.get("lease");
 
     if (
       searchTermFromUrl ||
@@ -85,7 +94,8 @@ export default function Search() {
       furnishedFromUrl ||
       offerFromUrl ||
       sortFromUrl ||
-      orderFromUrl
+      orderFromUrl ||
+      leaseFromUrl
     ) {
       setSideBarData({
         searchTerm: searchTermFromUrl || "",
@@ -95,6 +105,7 @@ export default function Search() {
         offer: offerFromUrl === "true" ? true : false,
         sort: sortFromUrl || "created_at",
         order: orderFromUrl || "desc",
+        lease: leaseFromUrl === "true" ? true : false,
       });
     }
 
@@ -189,6 +200,16 @@ const onShowMoreClick = async () => {
                 onChange={handleChange}
               />
               <span>Offer</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="lease"
+                className="w-5"
+                checked={sideBarData.lease}
+                onChange={handleChange}
+              />
+              <span>Lease</span>
             </div>
           </div>
           <div className="flex gap-2 flex-wrap items-center">
