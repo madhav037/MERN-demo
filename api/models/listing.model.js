@@ -50,6 +50,21 @@ const listingSchema = mongoose.Schema(
       type: Array,
       required: true,
     },
+    lease : {
+      type: Boolean,
+      required: true,
+      default : false
+    },
+    leasePeriod : {
+      type: Number,
+      required: false,
+      default : 0
+    },
+    isSold: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     userRef: {
       type: String,
       required: true,

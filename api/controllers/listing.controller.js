@@ -1,5 +1,6 @@
 import Listing from "../models/listing.model.js";
 import { errorHandler } from "../utils/error.js";
+import sendEmail from "../utils/sendEmail.js";
 
 export const createListing = async (req, res, next) => {
   try {
@@ -81,6 +82,11 @@ export const getListings = async (req, res, next) => {
       type = { $in: ["sale", "rent"] };
     }
 
+    let lease = req.query.lease;
+    if (lease === undefined || lease === "false") {
+      lease = { $in: [false, true] };
+    }
+
     const searchTerm = req.query.searchTerm || "";
 
     const sort = req.query.sort || "createdAt";
@@ -93,6 +99,7 @@ export const getListings = async (req, res, next) => {
       furnished,
       parking,
       type,
+      lease,
     })
       .sort({
         [sort]: order,
@@ -105,3 +112,45 @@ export const getListings = async (req, res, next) => {
     next(error);
   }
 };
+
+export const sendOTP = async (req, res, next) => {
+  const { ownerEmail, clientEmail } = req.body;
+  const otp = generateOTP();
+  try{
+    await sendEmail({
+      from: ownerEmail,
+      to: clientEmail,
+      subject: "OTP for verification",
+      text: `Your OTP is ${otp}`,
+    });
+    res.status(200).json(otp);
+  }
+  catch (error) {
+    next(error);
+  }
+}
+
+
+
+export const makePayment = async (req, res, next) => {
+  const { listingId, amount, ownerId } = req.body;
+
+  try {
+    const listing = await Listing.findById(listingId);
+    if (!listing) return next(errorHandler(404, "Listing not found"));
+
+    if (listing.isSold) return next(errorHandler(400, "Listing is already sold"));
+
+    listing.isSold = true;
+    listing.save();
+
+    
+    const owner = await User.findById(ownerId);
+    owner.totalAmount += amount * 0.02;
+    owner.save();
+    res.status(200).json("Payment successful");
+
+  }catch (error) {
+    next(error);
+  }
+}; 
