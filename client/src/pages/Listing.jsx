@@ -25,6 +25,9 @@ export default function Listing() {
   const [copied, setCopied] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const [contact, setContact] = useState(false);
+  const [showOTPmenu, setShowOTPmenu] = useState(false);
+  const [OTP, setOTP] = useState(0);
+  const [clientOTP, setClientOTP] = useState(0);
   SwiperCore.use([Navigation]);
   useEffect(() => {
     const fetchListing = async () => {
@@ -48,6 +51,57 @@ export default function Listing() {
     };
     fetchListing();
   }, [params.listingId]);
+
+  const getOTP = async() => {
+    try {
+      const res = await fetch(`/api/listing/getOTP`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ownerEmail : listing.userRef, clientEmail: currentUser.email})
+      })
+      const data = await res.json()
+      if (data.success === false) {
+        console.log(data)
+        return;
+      }
+      setOTP(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handlePayment = async() => {
+    try {
+      if (OTP == clientOTP) {
+          const ans = confirm('Make payment?')
+          if (ans) {
+            const res = await fetch(`/api/listing/makepayment`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({listingId : listing._id, ownerId: listing.userRef, amount: listing.offer ? listing.discountPrice : listing.regularPrice, clientEmail: currentUser.email})
+            })
+            const data = await res.json()
+            if (data.success === false) {
+              console.log(data)
+              return;
+            }
+            alert('Payment successful')
+            setShowOTPmenu(false)
+            console.log(data)
+          }else {
+            setShowOTPmenu(false)
+          }
+        }else {
+          alert('Invalid OTP...try again!')
+        }
+      }catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <main>
       {loading && <p className="text-center my-7 text-2xl">Loading...</p>}
@@ -150,9 +204,30 @@ export default function Listing() {
               </button>
             )}
             {currentUser && listing.userRef !== currentUser._id && !contact && (
-              <button className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3">
-                Buy Now
+              <button disabled={listing.isSold ? true : false} className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3" onClick={() => setShowOTPmenu(true)}>
+                {listing.isSold ? `Bought by : ${currentUser.username}` : "Buy Now"}
               </button>
+            )}
+            {showOTPmenu && (
+              <div className="z-20 absolute w-1/2 h-fit bg-slate-700 top-1/2 left-1/2 rounded-lg p-5" style={{transform: 'translate(-50%, -50%)'}}>
+                <div className="flex flex-row justify-between align-middle w-full mb-5">
+                  <button className="bg-slate-500 w-fit h-fit text-white rounded-lg uppercase hover:opacity-95 p-3" onClick={() => getOTP()}>get OTP</button>
+                  <button className="bg-slate-500 w-fit h-fit text-white rounded-lg uppercase hover:opacity-95 p-3" onClick={() => setShowOTPmenu(false)}>Close</button>
+                </div>
+                <div className="flex flex-row justify-center">
+                <input className="bg-slate-300 w-fit h-fit text-white rounded-lg uppercase hover:opacity-95 p-3 mr-4" placeholder="OTP" type="text" onChange={(e) => {
+                  const re = /^[0-9.\b]+$/;
+                  if (!re.test(e.target.value)) {
+                    e.target.value = e.target.value.slice(0, -1);
+                    alert('Please enter a valid OTP')
+                  }
+                  else {
+                    setClientOTP(e.target.value)
+                  }
+                }}/>
+                <button className="bg-slate-500 w-fit h-fit text-white rounded-lg uppercase hover:opacity-95 p-3" onClick={() => {handlePayment()}}>Pay</button>
+                </div>
+              </div>
             )}
             {contact && <Contact listing={listing} />}
           </div>

@@ -76,3 +76,19 @@ export const getUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getEarnings = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(
+      errorHandler(401, "you can only see earnings of your own account")
+    );
+  }
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return next(errorHandler(404, "user not found!"));
+    const earnings = user.totalAmount;
+    res.status(200).json(earnings);
+  } catch (error) {
+    next(error);
+  }
+}

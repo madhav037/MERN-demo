@@ -31,10 +31,12 @@ function Profile() {
   const dispatch = useDispatch();
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
+  const [earnings, setEarnings] = useState(0);
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
     }
+    getEarnings();
   }, [file]);
 
   const handleFileUpload = (file) => {
@@ -88,6 +90,30 @@ function Profile() {
       dispatch(updateUserFailure(error.message));
     }
   };
+
+  // useEffect(() => {
+    //   getEarnings();
+    // }, []);
+    
+  const getEarnings = async () => {
+      console.log('function called')
+    try {
+      const res = await fetch(`/api/user/earnings/${currentUser._id}`);
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      console.log(data);
+      setEarnings(data);
+    }catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  // window.onload = async () => {
+  //     await getEarnings();
+  // }
 
   const handleDeleteUser = async () => {
     try {
@@ -227,6 +253,9 @@ function Profile() {
           create listing
         </Link>
       </form>
+      <div>
+        <h1 className="text-xl mt-7 text-center font-semibold">Earnings : $ {earnings}</h1>
+      </div>
       <div className="flex justify-between mt-5">
         <span
           onClick={handleDeleteUser}

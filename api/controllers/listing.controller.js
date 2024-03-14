@@ -1,5 +1,7 @@
 import Listing from "../models/listing.model.js";
+import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
+import { generateOTP } from "../utils/generateOTP.js";
 import sendEmail from "../utils/sendEmail.js";
 
 export const createListing = async (req, res, next) => {
@@ -133,7 +135,7 @@ export const sendOTP = async (req, res, next) => {
 
 
 export const makePayment = async (req, res, next) => {
-  const { listingId, amount, ownerId } = req.body;
+  const { listingId, amount, ownerId, clientEmail} = req.body;
 
   try {
     const listing = await Listing.findById(listingId);
@@ -148,6 +150,13 @@ export const makePayment = async (req, res, next) => {
     const owner = await User.findById(ownerId);
     owner.totalAmount += amount * 0.02;
     owner.save();
+
+    await sendEmail({
+      from: owner.email,
+      to: clientEmail,
+      subject: "Payment successful",
+      text: `Payment of ${amount} was successful`,
+    });
     res.status(200).json("Payment successful");
 
   }catch (error) {
